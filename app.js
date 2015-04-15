@@ -1,15 +1,35 @@
-angular.module('flapperNews', [])
+angular.module('flapperNews', ['ui.router'])
+    .config([
+        '$stateProvider',
+        '$urlRouterProvider',
+        function($stateProvider, $urlRouterProvider) {
+            $stateProvider
+                .state('home', {
+                   url: '/home',
+                    templateUrl: '/home.html',
+                    controller: 'MainCtrl'
+                })
+                .state('posts', {
+                    url: '/posts/{id}',
+                    templateUrl: '/posts.html',
+                    controller: 'PostsCtrl'
+                });
+
+            $urlRouterProvider.otherwise('home');
+        }
+    ])
+    .factory('posts', [function(){
+        var o = {
+            posts: []
+        };
+        return o;
+    }])
     .controller('MainCtrl', [
         '$scope',
-        function($scope){
+        'posts',
+        function($scope, posts){
             $scope.test = 'Hello world!';
-            $scope.posts = [
-                {title: 'post 1', upvotes: 5, body: 'The first post.'},
-                {title: 'post 2', upvotes: 2, body: 'The second post.'},
-                {title: 'post 3', upvotes: 15, body: 'The third post.'},
-                {title: 'post 4', upvotes: 9, body: 'The fourth post.'},
-                {title: 'post 5', upvotes: 4, body: 'The fifth post.'}
-            ];
+            $scope.posts = posts.posts;
 
             $scope.addPost = function(){
                 if(!$scope.title || $scope.title === '') { return; }
@@ -19,7 +39,11 @@ angular.module('flapperNews', [])
                         title: $scope.title,
                         upvotes: 0,
                         link: $scope.link,
-                        body: $scope.body
+                        body: $scope.body,
+                        comments: [
+                            {author: 'Joe', body: 'Cool post!', upvotes: 0},
+                            {author: 'Bob', body: 'Great idea but everything is wrong!', upvotes: 0}
+                        ]
                     }
                 );
                 $scope.title = '';
@@ -30,4 +54,22 @@ angular.module('flapperNews', [])
             $scope.incrementUpvotes = function(post) {
                 post.upvotes += 1;
             };
-        }]);
+    }])
+    .controller('PostsCtrl', [
+        '$scope',
+        '$stateParams',
+        'posts',
+        function($scope, $stateParams, posts){
+            $scope.post = posts.posts[$stateParams.id];
+
+            $scope.addComment = function(){
+                if($scope.body === '') { return; }
+                $scope.post.comments.push({
+                    body: $scope.body,
+                    author: 'user',
+                    upvotes: 0
+                });
+                $scope.body = '';
+            };
+        }
+    ]);
