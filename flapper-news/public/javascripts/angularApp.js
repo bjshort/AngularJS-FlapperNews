@@ -48,7 +48,7 @@ angular.module('flapperNews', ['ui.router'])
             $urlRouterProvider.otherwise('home');
         }
     ])
-    .factory('posts', ['$http', 'auth', function($http, auth){
+    .factory('posts', ['$http', 'auth', 'error', function($http, auth, error){
         var o = {
             posts: []
         };
@@ -70,6 +70,8 @@ angular.module('flapperNews', ['ui.router'])
             headers: {Authorization: 'Bearer ' + auth.getToken()}
           }).success(function(data){
             o.posts.push(data);
+          }).error(function(data){
+            error.setError("You must be logged in to do that!");
           });
         };
 
@@ -78,6 +80,8 @@ angular.module('flapperNews', ['ui.router'])
             headers: {Authorization: 'Bearer ' + auth.getToken()}
           }).success(function(data){
             post.upvotes +=1;
+          }).error(function(data){
+            error.setError("You must be logged in to do that!");
           });
         };
 
@@ -138,7 +142,7 @@ angular.module('flapperNews', ['ui.router'])
       auth.login = function(user){
         return $http.post('/login', user).success(function(data){
           auth.saveToken(data.token);
-        });
+        })
       };
 
       auth.logOut = function(){
@@ -146,6 +150,21 @@ angular.module('flapperNews', ['ui.router'])
       };
 
       return auth;
+    }])
+    .factory('error', ['$http', '$window', function($http, $window){
+      var error = {};
+      error.message = null;
+
+      error.getError = function(){
+        if(error.message ===  null){ return false; }
+        return error.message;
+      };
+
+      error.setError = function(message){
+        error.message = message;
+      };
+
+      return error;
     }])
     .controller('MainCtrl', [
         '$scope',
@@ -230,5 +249,11 @@ angular.module('flapperNews', ['ui.router'])
         $scope.isLoggedIn = auth.isLoggedIn;
         $scope.currentUser = auth.currentUser;
         $scope.logOut = auth.logOut;
+      }
+    ]).controller('ErrorCtrl', [
+      '$scope',
+      'error',
+      function($scope, error){
+        $scope.error = error;
       }
     ]);

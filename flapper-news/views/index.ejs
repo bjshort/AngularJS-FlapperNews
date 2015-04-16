@@ -1,6 +1,6 @@
 <html>
 <head>
-    <title>My Angular App!</title>
+    <title>Documentation</title>
     <link href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
     <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.19/angular.min.js"></script>
     <script src="http://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.10/angular-ui-router.js"></script>
@@ -9,7 +9,7 @@
 <body ng-app="flapperNews" ng-controller="MainCtrl">
 <script type="text/ng-template" id="/home.html">
     <div class="page-header">
-        <h1>Hello World</h1>
+        <h1>Documentation</h1>
     </div>
 
     <div ng-repeat="post in posts | orderBy: '-upvotes'">
@@ -125,7 +125,7 @@
 </script>
 <script type="text/ng-template" id="/login.html">
   <div class="page-header">
-    <h1>Flapper News</h1>
+    <h1>Documentation</h1>
   </div>
 
   <div ng-show="error" class="alert alert-danger row">
@@ -156,6 +156,11 @@
 </nav>
 <div class="row">
     <div class="col-md-6 col-md-offset-3">
+      <div ng-controller="ErrorCtrl">
+        <div ng-show="error.getError()" class="alert alert-danger">
+          {{error.getError()}}
+        </div>
+      </div>
         <ui-view></ui-view>
     </div>
 </div>

@@ -10,10 +10,11 @@ passport.use(new LocalStrategy(
       if(!user) {
         return done(null, false, { message: 'Incorrect username.' });
       }
+      console.log("HERE");
       if(!user.validPassword(password)) {
-        return(null, false, { message: 'Incorrect password.'});
+        console.log("HERE 2");
+        return done(null, false, { message: 'Incorrect password.'});
       }
-      
       return done(null, user);
     });
   }
